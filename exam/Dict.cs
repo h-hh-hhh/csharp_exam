@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,23 @@ namespace exam
             foreach(var entry in query)
             {
                 Entries.Remove(entry);
+            }
+        }
+        public List<DictEntry> Search(string source)
+        {
+            return (from entry in Entries
+                    where entry.SourceWord == source
+                    select entry).ToList();
+        }
+        public void SearchWithExport(string source, string filename)
+        {
+            var serializer = new XmlSerializer(typeof(List<DictEntry>));
+            var searchResult = (from entry in Entries
+                                where entry.SourceWord == source
+                                select entry).ToList();
+            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                serializer.Serialize(fs, searchResult);
             }
         }
     }
