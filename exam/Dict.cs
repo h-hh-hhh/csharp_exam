@@ -33,7 +33,18 @@ namespace exam
             var query = from entry in Entries
                         where entry.SourceWord == source
                         select entry;
-            foreach(var entry in query)
+            foreach (var entry in query)
+            {
+                Entries.Remove(entry);
+            }
+        }
+        public void DeleteTranslation(string source, string translation)
+        {
+            var query = from entry in Entries
+                        where entry.SourceWord == source
+                        where entry.Translation == translation
+                        select entry;
+            foreach (var entry in query)
             {
                 Entries.Remove(entry);
             }
