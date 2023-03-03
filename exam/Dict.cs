@@ -14,7 +14,8 @@ namespace exam
         public string SourceLanguage { get; set; }
         [XmlAttribute("dest")]
         public string DestinationLanguage { get; set; }
-        public List<DictEntry> Entries { get; } = new List<DictEntry>();
+        private List<DictEntry> entries = new List<DictEntry>();
+        public List<DictEntry> Entries => entries;
         public void Add(DictEntry entry)
         {
             Entries.Add(entry);
@@ -65,6 +66,26 @@ namespace exam
             {
                 serializer.Serialize(fs, searchResult);
             }
+        }
+        public void Save(string filename)
+        {
+            var serializer = new XmlSerializer(typeof(Dict));
+            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                serializer.Serialize(fs, this);
+            }
+        }
+        public void Load(string filename)
+        {
+            var serializer = new XmlSerializer(typeof(Dict));
+            Dict loadedDict = new Dict();
+            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            {
+                loadedDict = (Dict)(serializer.Deserialize(fs));
+            }
+            this.SourceLanguage = loadedDict.SourceLanguage;
+            this.DestinationLanguage = loadedDict.DestinationLanguage;
+            this.entries = loadedDict.Entries;
         }
     }
 }
