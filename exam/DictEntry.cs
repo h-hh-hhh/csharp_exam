@@ -10,5 +10,9 @@ namespace exam
     {
         public string SourceWord { get; set; }
         public string Translation { get; set; }
+        public override string ToString()
+        {
+            return $"{SourceWord}: {Translation}";
+        }
     }
 }
