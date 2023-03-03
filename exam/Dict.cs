@@ -29,15 +29,18 @@ namespace exam
             Entries.Find(entry => entry.SourceWord == source && entry.Translation == translation).Translation = substTranslation;
         }
         // returns number of deleted words
-        public void DeleteSourceWord(string source)
+        public int DeleteSourceWord(string source)
         {
             var query = from entry in Entries
                         where entry.SourceWord == source
                         select entry;
+            int deleted = 0;
             foreach (var entry in query)
             {
                 Entries.Remove(entry);
+                deleted++;  
             }
+            return deleted;
         }
         public void DeleteTranslation(string source, string translation)
         {
@@ -45,7 +48,7 @@ namespace exam
                         where entry.SourceWord == source
                         where entry.Translation == translation
                         select entry;
-            foreach (var entry in query)
+            foreach (var entry in query) // should be 1 entry ideally
             {
                 Entries.Remove(entry);
             }
@@ -59,9 +62,7 @@ namespace exam
         public void SearchWithExport(string source, string filename)
         {
             var serializer = new XmlSerializer(typeof(List<DictEntry>));
-            var searchResult = (from entry in Entries
-                                where entry.SourceWord == source
-                                select entry).ToList();
+            var searchResult = Search(source);
             using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
             {
                 serializer.Serialize(fs, searchResult);
@@ -79,13 +80,21 @@ namespace exam
         {
             var serializer = new XmlSerializer(typeof(Dict));
             Dict loadedDict = new Dict();
-            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            try
             {
-                loadedDict = (Dict)(serializer.Deserialize(fs));
+                using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                {
+                    loadedDict = (Dict)(serializer.Deserialize(fs));
+                }
             }
-            this.SourceLanguage = loadedDict.SourceLanguage;
-            this.DestinationLanguage = loadedDict.DestinationLanguage;
-            this.entries = loadedDict.Entries;
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine($"File {filename} not found!");
+                return;
+            }
+            SourceLanguage = loadedDict.SourceLanguage;
+            DestinationLanguage = loadedDict.DestinationLanguage;
+            entries = loadedDict.Entries;
         }
     }
 }
