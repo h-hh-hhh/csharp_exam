@@ -31,27 +31,14 @@ namespace exam
         // returns number of deleted words
         public int DeleteSourceWord(string source)
         {
-            var query = from entry in Entries
-                        where entry.SourceWord == source
-                        select entry;
             int deleted = 0;
-            foreach (var entry in query)
-            {
-                Entries.Remove(entry);
-                deleted++;  
-            }
+            Entries.RemoveAll(entry => { deleted++; return entry.SourceWord == source; });
             return deleted;
         }
         public void DeleteTranslation(string source, string translation)
         {
-            var query = from entry in Entries
-                        where entry.SourceWord == source
-                        where entry.Translation == translation
-                        select entry;
-            foreach (var entry in query) // should be 1 entry ideally
-            {
-                Entries.Remove(entry);
-            }
+            Entries.RemoveAll(entry => (entry.SourceWord == source &&
+                                        entry.Translation == translation));
         }
         public List<DictEntry> Search(string source)
         {
