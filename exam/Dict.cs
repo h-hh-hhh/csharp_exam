@@ -12,10 +12,16 @@ namespace exam
     {
         [XmlAttribute("source")]
         public string SourceLanguage { get; set; }
+
         [XmlAttribute("dest")]
         public string DestinationLanguage { get; set; }
+
         private List<DictEntry> entries = new List<DictEntry>();
         public List<DictEntry> Entries => entries;
+
+        private List<string> searchHistory = new List<string>();
+        public List<string> SearchHistory => searchHistory;
+
         public void Add(DictEntry entry)
         {
             Entries.Add(entry);
@@ -37,11 +43,20 @@ namespace exam
         }
         public void DeleteTranslation(string source, string translation)
         {
+            var query = from entry in Entries
+                        where entry.SourceWord == source
+                        select entry;
+            if(query.Count() <= 1)
+            {
+                Console.WriteLine("Last translation cannot delete!");
+                return;
+            }
             Entries.RemoveAll(entry => (entry.SourceWord == source &&
                                         entry.Translation == translation));
         }
         public List<DictEntry> Search(string source)
         {
+            searchHistory.Add(source);
             return (from entry in Entries
                     where entry.SourceWord == source
                     select entry).ToList();
@@ -82,6 +97,14 @@ namespace exam
             SourceLanguage = loadedDict.SourceLanguage;
             DestinationLanguage = loadedDict.DestinationLanguage;
             entries = loadedDict.Entries;
+        }
+        public void ClearSearchHistory()
+        {
+            searchHistory = new List<string>();
+        }
+        public List<string> GetSearchHistory(int amount)
+        {
+            return ((IEnumerable<string>)SearchHistory).Reverse().Take(amount).ToList();
         }
     }
 }
