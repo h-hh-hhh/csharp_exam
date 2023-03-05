@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,16 +9,16 @@ using System.Xml.Serialization;
 
 namespace exam
 {
-    public class DictCollection
+    public class DictCollection : IEnumerable<Dict>
     {
         [XmlText(typeof(List<Dict>))]
         private List<Dict> dicts = new List<Dict>();
         public List<Dict> Dicts => dicts;
 
-        public Dict this[int i]
-        {
-            get => dicts[i];
-        }
+        public int Count => dicts.Count;
+
+        public Dict this[int i] => dicts[i];
+
         public void Add(Dict dict)
         {
             dicts.Add(dict);
@@ -47,6 +48,16 @@ namespace exam
                 return;
             }
             dicts = loadedDicts.Dicts;
+        }
+
+        public IEnumerator<Dict> GetEnumerator()
+        {
+            return ((IEnumerable<Dict>)Dicts).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Dicts).GetEnumerator();
         }
     }
 }
