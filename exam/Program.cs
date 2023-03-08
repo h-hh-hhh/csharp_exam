@@ -11,7 +11,10 @@ namespace exam
     {
         static void Main(string[] args)
         {
-            Console.OutputEncoding = Encoding.UTF8;
+            Console.OutputEncoding = Encoding.Unicode;
+            Console.InputEncoding = Encoding.Unicode;
+
+            Console.WriteLine("тест1488");
 
             DictCollection dictCollection = new DictCollection();
             int? currentDict = null;
