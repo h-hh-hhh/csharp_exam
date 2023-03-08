@@ -33,6 +33,7 @@ namespace exam
             {
                 serializer.Serialize(fs, this);
             }
+            logger.Info($"Serialized successfully to {filename}");
         }
         public void Load(string filename)
         {
@@ -44,12 +45,17 @@ namespace exam
                 {
                     loadedDicts = (DictCollection)(serializer.Deserialize(fs));
                 }
-
+                logger.Info($"Deserialized successfully from {filename}");
             }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine($"File {filename} not found!");
+                logger.Warn($"File {filename} not found!");
                 return;
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error when deserializing {filename}: {e.Message}");
             }
             dicts = loadedDicts.Dicts;
         }

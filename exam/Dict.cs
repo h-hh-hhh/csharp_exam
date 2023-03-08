@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace exam
 {
     public class Dict
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
         [XmlAttribute("source")]
         public string SourceLanguage { get; set; }
 
@@ -77,6 +79,7 @@ namespace exam
             {
                 serializer.Serialize(fs, this);
             }
+            logger.Info($"Serialized successfully to {filename}");
         }
         public void Load(string filename)
         {
@@ -88,11 +91,17 @@ namespace exam
                 {
                     loadedDict = (Dict)(serializer.Deserialize(fs));
                 }
+                logger.Info($"Deserialized successfully from {filename}");
             }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine($"File {filename} not found!");
+                logger.Warn($"File {filename} not found!");
                 return;
+            }
+            catch (Exception e)
+            {
+                logger.Error($"Error when deserializing {filename}: {e.Message}");
             }
             SourceLanguage = loadedDict.SourceLanguage;
             DestinationLanguage = loadedDict.DestinationLanguage;
