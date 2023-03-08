@@ -26,9 +26,15 @@ namespace exam
         public void Save(string filename)
         {
             var serializer = new XmlSerializer(typeof(DictCollection));
-            using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+            using(StringWriter stringWriter = new Utf8StringWriter())
             {
-                serializer.Serialize(fs, this);
+                serializer.Serialize(stringWriter, this);
+
+                using (var fs = new FileStream(filename, FileMode.Create, FileAccess.Write))
+                {
+                    fs.SetLength(0); // clear file
+                    fs.Write(Encoding.UTF8.GetBytes(stringWriter.ToString()), 0, stringWriter.ToString().Count());
+                }
             }
         }
         public void Load(string filename)
