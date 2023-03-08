@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,8 @@ namespace exam
 {
     public class DictCollection : IEnumerable<Dict>
     {
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         [XmlText(typeof(List<Dict>))]
         private List<Dict> dicts = new List<Dict>();
         public List<Dict> Dicts => dicts;
@@ -41,6 +44,7 @@ namespace exam
                 {
                     loadedDicts = (DictCollection)(serializer.Deserialize(fs));
                 }
+
             }
             catch (FileNotFoundException e)
             {
